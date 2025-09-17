@@ -87,6 +87,27 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     });
 });
 
+// Tarea 9: Eliminar reseña de un libro
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  const isbn = req.params.isbn;
+  const username = req.user.username; // usuario tomado del token
+
+  if (!isbn || !books[isbn]) {
+    return res.status(404).json({ message: "Libro no encontrado" });
+  }
+
+  if (books[isbn].reviews && books[isbn].reviews[username]) {
+    delete books[isbn].reviews[username]; // elimina la reseña del usuario
+    return res.status(200).json({
+      message: "Reseña eliminada con éxito",
+      reviews: books[isbn].reviews
+    });
+  } else {
+    return res.status(404).json({ message: "No hay reseña tuya para este libro" });
+  }
+});
+
+
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;

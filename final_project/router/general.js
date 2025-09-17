@@ -65,9 +65,9 @@ public_users.get('/title/:title', function (req, res) {
   }
 });
 
-public_users.get('/review/:isbn', function (req, res) {
-  const isbn = req.params.isbn;  // ISBN desde la URL
-  const book = books[isbn];      // buscamos el libro
+public_users.get('/review/:isbn', (req, res) => {
+  const isbn = req.params.isbn;       // siempre string
+  const book = books[isbn];           // debería funcionar porque books["1"] existe
 
   if (book) {
     return res.status(200).json(book.reviews);
@@ -75,6 +75,7 @@ public_users.get('/review/:isbn', function (req, res) {
     return res.status(404).json({ message: "Libro no encontrado" });
   }
 });
+
 
 // Tarea 10: Obtener todos los libros usando async/await con Axios
 public_users.get("/async/books", async (req, res) => {
@@ -110,6 +111,19 @@ public_users.get("/async/author/:author", async (req, res) => {
     return res.status(500).json({ message: "Error obteniendo libros por autor", error: error.message });
   }
 });
+
+// Tarea 13: Obtener detalles de libros por título usando async/await con Axios
+public_users.get("/async/title/:title", async (req, res) => {
+  const title = req.params.title;
+  try {
+    
+    const response = await axios.get(`http://localhost:5000/title/${title}`);
+    return res.status(200).json(response.data);
+  } catch (error) {
+    return res.status(500).json({ message: "Error obteniendo libros por título", error: error.message });
+  }
+});
+
 
 
 
