@@ -1,3 +1,4 @@
+
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const session = require('express-session')
@@ -10,10 +11,26 @@ app.use(express.json());
 
 app.use("/customer",session({secret:"fingerprint_customer",resave: true, saveUninitialized: true}))
 
-app.use("/customer/auth/*", function auth(req,res,next){
-//Write the authenication mechanism here
+app.use("/customer/auth/*", function auth(req, res, next) {
+    const token = req.headers["authorization"];
+
+    if (!token) {
+        return res.status(401).json({ message: "No token proporcionado" });
+    }
+
+    const accessToken = token.split(" ")[1];
+
+    jwt.verify(accessToken, "clave_secreta", (err, decoded) => {
+        if (err) {
+            return res.status(403).json({ message: "Token inválido" });
+        }
+        req.user = decoded; 
+        next();
+    });
 });
- 
+
+
+        
 const PORT =5000;
 
 app.use("/customer", customer_routes);
